@@ -1,0 +1,118 @@
+
+
+header {
+    position: relative;
+    height: 70px;
+    line-height: 70px;
+    z-index: 2;
+    text-align: center;
+    background: #FFFFFF;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    -moz-box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    -webkit-box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+
+    .logo-container {
+        display: inline-flex;
+        line-height: 50px;
+
+        p {
+            margin: 0;
+            font-family: Seaweed Script;
+            font-style: normal;
+            font-weight: normal;
+            font-size: 30px;
+            letter-spacing: 0.51em;
+            color: #FF8A00;
+        }
+    }
+}
+
+:host ::ng-deep {
+    mat-sidenav-container {
+        flex: 1;
+
+        mat-sidenav {
+            padding: 20px;
+        }
+
+        section {
+            display: flex;
+            flex-direction: column;
+
+            .mat-checkbox {
+                margin-bottom: 20px;
+                padding: 0 5px;
+            }
+
+            .mat-checkbox-inner-container, .mat-checkbox-frame {
+                height: 20px;
+                width: 20px;
+            }
+
+            .mat-checkbox-label {
+                font-size: 16px;
+                height: 20px;
+                line-height: 20px;
+                color: #818181;
+            }
+
+            .mat-checkbox-checked.mat-accent .mat-checkbox-background {
+                background-color: #4E4E4E;
+            }
+
+            .mat-accent .mat-checkbox-ripple .mat-ripple-element {
+                display: none;
+            }
+
+            button {
+                background: #4E4E4E;
+                border-radius: 10px;
+                color: white;
+            }
+        }
+    }
+}
+
+mat-sidenav-content {
+    padding: 20px;
+}
+
+.categories-container {
+    article {
+        font-size: 24px;
+        color: #818181;
+        margin-top: 30px;
+
+        &:first-child {
+            margin-top: 0;
+        }
+    }
+
+    .content {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+    }
+
+    hr {
+        margin: 10px 0 30px;
+        border: 0;
+        border-top: 1px solid #D0D0D0;
+    }
+
+    .cocktail-card {
+        text-align: center;
+        width: 220px;
+    }
+    
+    img {
+        height: 150px;
+        width: 150px;
+    }
+    
+    p {
+        font-size: 18px;
+    }
+
+
+}
