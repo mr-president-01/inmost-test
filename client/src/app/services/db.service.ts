@@ -2,13 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { map, take } from 'rxjs/operators';
 
-export interface IDbBeat {
-  beatKey: string;
-  lastUpdated: number;
-  thumbnail: string;
-  title: string;
-  beatUrl: string;
-}
+
 
 @Injectable({
   providedIn: 'root'
@@ -25,15 +19,7 @@ export class DbService {
   getFilterList() {
     let params = new HttpParams();
     params = params.set('c', 'list');
-    
-    const filterResponse = this.http.get(this.filterUrl, {params: params});
-
-    filterResponse
-      .pipe(take(1))
-      .subscribe((data) => {
-        console.log(data);
-        return data['drinks'];
-      })
+    return this.http.get(this.filterUrl, {params: params}).toPromise();
   }
 
   getCocktail(category: string) {
