@@ -1,8 +1,8 @@
 import { Component, OnInit, EventEmitter } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Subject } from 'rxjs';
-import { take } from 'rxjs/operators';
 import { MatCheckboxChange } from '@angular/material/checkbox';
+import { DbService } from 'src/app/services/db.service';
 
 @Component({
   selector: 'app-home',
@@ -13,60 +13,58 @@ import { MatCheckboxChange } from '@angular/material/checkbox';
 
 export class HomeComponent implements OnInit {
 
-  public filterUrl: string = 'https://www.thecocktaildb.com/api/json/v1/1/list.php';
-  public cocktailUrl: string = 'https://www.thecocktaildb.com/api/json/v1/1/filter.php';
-  public filterList = new Object();
+  public filterList: { [filterKey: string]: boolean };
   public currentFilterState = new Object();
   public showContent = false;
   public cocktails = {};
-  public clearSubscribe = new Subject<boolean>();
 
 
   constructor(
-    private http: HttpClient
+    private http: HttpClient,
+    private dbService: DbService
   ) { }
 
   async ngOnInit() {
-    await this.getFilterList().then( (obj) => {
-      this.filterList = obj['drinks'].map((k) => {
-        this.currentFilterState[k.strCategory] = true;
-        return k.strCategory;
-      })
-    });
+    await this.getFilterList();
 
-    this.receiveChoosenCategories();
+    // this.receiveChoosenCategories();
     this.showContent = true;
     console.log(this.filterList);
   }
 
-  getFilterList() {
-    let params = new HttpParams();
-    params = params.set('c', 'list');
-    return this.http.get(this.filterUrl, {params: params}).toPromise();
+  async getFilterList() {
+    const obj = await this.dbService.getFilterList();
+    this.filterList = obj.map((k) => {
+      this.currentFilterState[k.strCategory] = true;
+      return k.strCategory;
+    })
   }
 
   receiveChoosenCategories () {
     //Sorting categories which we wanna get
-    const ids = Object.keys(this.currentFilterState).map((key) => {
-      if (this.currentFilterState[key] == true) return key;
-    }).filter(k => k);
+    const ids = Object
+      .keys(this.currentFilterState)
+      .map((key) => {
+          if (this.currentFilterState[key] == true) return key;
+      })
+      .filter(k => k);
 
     ids.forEach(id => {
-      this.getCocktail(id);
+      this.cocktails[id] = this.dbService.getCocktail(id);
     })
   }
 
-  getCocktail(id: string) {
+  // getCocktail(id: string) {
     
-    let params = new HttpParams();
-    params = params.set('c', id);
+  //   let params = new HttpParams();
+  //   params = params.set('c', id);
 
-    this.http.get<any>(this.cocktailUrl, {params: params})
-    .pipe(take(1))
-    .subscribe(data => {
-      this.cocktails[id] = data.drinks;
-    })
-  }
+  //   this.http.get<any>(this.cocktailUrl, {params: params})
+  //   .pipe(take(1))
+  //   .subscribe(data => {
+  //     this.cocktails[id] = data.drinks;
+  //   })
+  // }
 
   toggleCheckbox( event: EventEmitter<MatCheckboxChange>, category: string) {
     this.currentFilterState[category] = event['checked'];
