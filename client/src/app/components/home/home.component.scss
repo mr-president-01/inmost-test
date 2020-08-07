@@ -71,6 +71,10 @@ header {
             }
         }
     }
+
+    .mat-progress-spinner circle, .mat-spinner circle {
+        stroke: #FF8A00;
+    }
 }
 
 mat-sidenav-content {
@@ -103,6 +107,7 @@ mat-sidenav-content {
     .cocktail-card {
         text-align: center;
         width: 220px;
+        margin-bottom: 50px;
     }
     
     img {
@@ -112,7 +117,12 @@ mat-sidenav-content {
     
     p {
         font-size: 18px;
+        margin: 20px 0 0;
     }
 
+}
 
+mat-spinner {
+    align-self: center;
+    margin-top: 100px;
 }

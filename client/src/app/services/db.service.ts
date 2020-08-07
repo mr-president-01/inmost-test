@@ -1,6 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { map, take } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { DrinkCategoriesList } from 'src/interfaces/drink-categories-list.interface';
+import { DrinksList } from 'src/interfaces/drinks-list.interface';
 
 
 
@@ -16,23 +19,17 @@ export class DbService {
     private http: HttpClient
   ) { }
 
-  getFilterList() {
+  public getFilterList(): Observable<DrinkCategoriesList> {
     let params = new HttpParams();
     params = params.set('c', 'list');
-    return this.http.get(this.filterUrl, {params: params}).toPromise();
+    return this.http.get<DrinkCategoriesList>(this.filterUrl, {params});
   }
 
-  getCocktail(category: string) {
+
+  public getCocktail(category: string): Observable<DrinksList> {
     let params = new HttpParams();
     params = params.set('c', category);
-    const cocktailRequest = this.http.get<any>(this.cocktailUrl, {params: params});
-
-    cocktailRequest
-      .pipe(take(1))  
-      .subscribe((data) => {
-        console.log(data);
-        return data.drinks;
-      });
+    return this.http.get<DrinksList>(this.cocktailUrl, {params});
   }
 
 }

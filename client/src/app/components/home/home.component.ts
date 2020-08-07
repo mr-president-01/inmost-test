@@ -1,8 +1,17 @@
-import { Component, OnInit, EventEmitter } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
-import { Subject } from 'rxjs';
-import { MatCheckboxChange } from '@angular/material/checkbox';
+import { Component, OnInit } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { DbService } from 'src/app/services/db.service';
+import { Drink } from 'src/interfaces/drink.interface';
+
+interface WholeCategory {
+  category: string, 
+  drinks: Array<Drink>
+}
+
+interface FilterState {
+  name: string, 
+  value: boolean 
+}
 
 @Component({
   selector: 'app-home',
@@ -13,10 +22,9 @@ import { DbService } from 'src/app/services/db.service';
 
 export class HomeComponent implements OnInit {
 
-  public filterList: { [filterKey: string]: boolean };
-  public currentFilterState = new Object();
+  public filterList: Array<FilterState>;
   public showContent = false;
-  public cocktails = {};
+  public cocktails: Array<WholeCategory>;
 
 
   constructor(
@@ -24,47 +32,31 @@ export class HomeComponent implements OnInit {
     private dbService: DbService
   ) { }
 
-  async ngOnInit() {
-    await this.getFilterList();
-
-    this.receiveChoosenCategories();
-    this.showContent = true;
-    console.log(this.filterList);
+  ngOnInit() {
+    this.getFilterList();
   }
 
-  async getFilterList() {
-    const obj = await this.dbService.getFilterList();
-    this.filterList = obj['drinks'].map((k) => {
-      this.currentFilterState[k.strCategory] = true;
-      return k.strCategory;
+  private getFilterList(): void {
+    this.dbService.getFilterList().
+      subscribe(res => {
+        this.filterList = res.drinks.map(drink => ({ name: drink.strCategory, value: true }));
+        this.receiveChoosenCategories();
+      });
+  }
+
+  public receiveChoosenCategories(): void {
+    this.cocktails = [];
+
+    this.filterList
+      .filter(category => category.value)
+      .map(category => category.name)
+      .forEach((name, index, array) => this.getDrinkCategory(name, index,array));
+  }
+
+  private getDrinkCategory(name: string, index: number, array: Array<string>): void {
+    this.dbService.getCocktail(name).subscribe(drinks => {
+      this.cocktails.push({category: name, drinks: drinks.drinks})
+      if (index === (array.length - 1)) this.showContent = true;
     })
   }
-
-  receiveChoosenCategories () {
-    //Sorting categories which we wanna get
-    const ids = Object
-      .keys(this.currentFilterState)
-      .map((key) => {
-          if (this.currentFilterState[key] == true) return key;
-      })
-      .filter(k => k);
-
-    ids.forEach(id => {
-      this.cocktails[id] = this.dbService.getCocktail(id);
-    })
-  }
-
-  toggleCheckbox( event: EventEmitter<MatCheckboxChange>, category: string) {
-    this.currentFilterState[category] = event['checked'];
-  }
-
-  async clickApply() {
-    await this.receiveChoosenCategories();
-    // .then((cock) => {
-    //   this.cocktails = cock;
-    // })
-    console.log(this.cocktails);
-  }
-
-
 }
